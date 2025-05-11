@@ -3,7 +3,7 @@ provider "azurerm" {
 }
 
 # Resource Group
-resource "azurerm_resource_group" "ziddy_rg" {
+resource "azurerm_resource_group" "milanRG" {
   name     = "milanRG"
   location = "Canada Central"
 }
@@ -11,8 +11,8 @@ resource "azurerm_resource_group" "ziddy_rg" {
 # Azure OpenAI Resource
 resource "azurerm_cognitive_account" "openai" {
   name                = "ziddyopenai"
-  location            = azurerm_resource_group.ziddy_rg.location
-  resource_group_name = azurerm_resource_group.ziddy_rg.name
+  location            = azurerm_resource_group.milanRG.location
+  resource_group_name = azurerm_resource_group.milanRG.name
   kind                = "OpenAI"
   sku_name            = "S0"
 }
