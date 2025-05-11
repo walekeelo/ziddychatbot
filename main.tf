@@ -2,31 +2,36 @@ provider "azurerm" {
   features {}
 }
 
-# Resource Group
-resource "azurerm_resource_group" "milanRG" {
-  name     = "milanRG"
-  location = "Canada Central"
+data "azurerm_resource_group" "existing_rg" {
+  name = "milanRG"
 }
 
-# Azure OpenAI Resource
-resource "azurerm_cognitive_account" "openai" {
-  name                = "ziddyopenai"
-  location            = azurerm_resource_group.milanRG.location
-  resource_group_name = azurerm_resource_group.milanRG.name
+resource "azurerm_cognitive_account" "ziddy_openai" {
+  name                = "ziddyopenaiacct"
+  location            = data.azurerm_resource_group.existing_rg.location
+  resource_group_name = data.azurerm_resource_group.existing_rg.name
   kind                = "OpenAI"
   sku_name            = "S0"
+
+  tags = {
+    environment = "dev"
+  }
 }
 
-# Deployment of GPT model (e.g., gpt-35-turbo)
 resource "azurerm_cognitive_deployment" "ziddy_gpt" {
-  name                 = "ziddygpt"
-  cognitive_account_id = azurerm_cognitive_account.openai.id
+  name                 = "ziddy-gpt-deployment"
+  cognitive_account_id = azurerm_cognitive_account.ziddy_openai.id
+
   model {
-    format = "OpenAI"
-    name   = "gpt-35-turbo"
+    format  = "OpenAI"
+    name    = "gpt-35-turbo"
     version = "0613"
   }
-  scale {
-    type = "Standard"
+
+  sku {
+    name     = "S0"
+    capacity = 1
   }
+
+  scale_type = "Standard"
 }
